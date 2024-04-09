@@ -14,7 +14,7 @@ alignment = []
 
 def initialize():
     global common_races, rare_races, exotic_races, classes, alignment
-    with open('../data/data.json', 'r') as data_file:
+    with open('data/data.json', 'r') as data_file:
         data = json.load(data_file)
         common_races = data['races']['common']
         rare_races = data['races']['rare']
@@ -116,6 +116,11 @@ def alignment_container():
 def randomize_selection(chosen_classes, chosen_races):
     char_class = random.choice(chosen_classes)
     char_race = random.choice(chosen_races)
+    return char_class, char_race
+
+
+def age_container():
+    pass
 
 
 def main():
@@ -127,11 +132,13 @@ def main():
         st.title('Options')
         st.write('Except for alignment, you can select multiple options but the generator will only choose one of each')
         selected_classes = classes_container()
+        selected_age = age_container()
         char_alignment = alignment_container()
         selected_races = races_container()
-        char_class, char_race = randomize_selection(selected_classes, selected_races)
-
-    print(chosen_races, chosen_classes)
+    if len(selected_races) > 0 and len(selected_classes) > 0:
+        if st.button('Generate NPC'):
+            char_class, char_race = randomize_selection(selected_classes, selected_races)
+            st.write(f'classes: {char_class}, races: {char_race}, alignment: {char_alignment}')
 
 
 if __name__ == "__main__":
