@@ -30,3 +30,10 @@ The first step is setting up a Python Environment: this guide will walk you thro
     - To use Mistral 7b, you need to open the terminal and type `ollama pull mixtral` and press Enter.
 - Once you have downloaded the LLM, you need to set the environment variable `OLLAMA_MODEL` in the file model.env
   - To use Mistral 8x7b, you need to set `OLLAMA_MODEL=mixtral`.
+
+#### Step 5: Open the web app
+
+- Navigate to *fantasy_npc_generator* using the command prompt or terminal.  
+- Type `streamlit run webapp.py` and press Enter.
+- A page will be opened in the default browser. If not, simply click on the Local URL link that will appear in the terminal.
+- When the web app is opened, you can start to use it to generate your NPCs!
