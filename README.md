@@ -31,7 +31,7 @@ The first step is setting up a Python Environment: this guide will walk you thro
 - Once you have downloaded the LLM, you need to set the environment variable `OLLAMA_MODEL` in the file model.env
   - To use Mistral 8x7b, you need to set `OLLAMA_MODEL=mixtral`.
 
-#### Step 5: Open the web app
+### Step 5: Open the web app
 
 - Navigate to *fantasy_npc_generator* using the command prompt or terminal.  
 - Type `streamlit run webapp.py` and press Enter.
