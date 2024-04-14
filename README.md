@@ -37,3 +37,13 @@ The first step is setting up a Python Environment: this guide will walk you thro
 - Type `streamlit run webapp.py` and press Enter.
 - A page will be opened in the default browser. If not, simply click on the Local URL link that will appear in the terminal.
 - When the web app is opened, you can start to use it to generate your NPCs!
+
+## Future Features
+- Add more options for generating NPCs
+- Generate also "standard NPCs" (like guards, merchants, etc.)
+- Create a chatbot to interact with the generated NPC
+- Add a feature to generate a full party of NPCs
+- Generate also the NPC stats or a full character sheet
+- Add PDF export functionality
+- Add card-like view for the generated NPCs
+- Add a field to add a custom description for the NPC
