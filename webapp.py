@@ -3,6 +3,8 @@ import random
 
 import streamlit as st
 
+from utils.llms_utils import generate_npc
+
 common_races = []
 rare_races = []
 exotic_races = []
@@ -79,6 +81,7 @@ def races_container():
 
 
 def classes_container():
+    global classes
     st.header('Classes options')
 
     if 'classes' not in st.session_state:
@@ -137,7 +140,7 @@ def age_calculator(char_race, char_age_range):
     mature_age, max_age = age_ranges.split('-')
     mature_age = int(mature_age)
 
-    check_over_max_age = False  #TODO: implement this as a message to the user
+    check_over_max_age = False  # TODO: implement this as a message to the user
     if max_age.endswith('+'):
         max_age = int(max_age[:-1])
         check_over_max_age = True
@@ -172,8 +175,21 @@ def main():
 
     if len(selected_races) > 0 and len(selected_classes) > 0:
         if st.button('Generate NPC'):
-            char_class, char_race, char_age = randomize_selection(selected_classes, selected_races, selected_age)
-            st.write(f'classes: {char_class}, races: {char_race}, alignment: {char_alignment}, age: {char_age}')
+            with st.spinner('Your NPC is being generated... (estimated time: 20-30 seconds)'):
+                char_class, char_race, char_age = randomize_selection(selected_classes, selected_races, selected_age)
+                char_name, char_description, char_marks, char_profession, char_background = generate_npc(char_class,
+                                                                                                         char_race,
+                                                                                                         char_age,
+                                                                                                         char_alignment)
+            st.write(f'Name: {char_name}')
+            st.write(f'Class: {char_class}')
+            st.write(f'Race: {char_race}')
+            st.write(f'Age: {char_age}')
+            st.write(f'Alignment: {char_alignment}')
+            st.write(f'Profession: {char_profession}')
+            st.write(f'Description: {char_description}')
+            st.write(f'Distinctive Marks: {char_marks}')
+            st.write(f'Background: {char_background}')
 
 
 if __name__ == "__main__":
