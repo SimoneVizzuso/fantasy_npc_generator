@@ -25,10 +25,8 @@ The first step is setting up a Python Environment: this guide will walk you thro
 
 - For the generator to work, you need to install a LLM (Large Language Model). The fastest and easiest way to do this is to use Ollama.
 - You can download Ollama from [here](https://ollama.com/)
-- Once you have downloaded Ollama, you need to choose an LLM. This generator is optimized for Mistral 7b and Mistral 8x7b (or Mixtral).
-  - For Mistral 7b you need at least 24GB of RAM and a GPU with at least 8GB of VRAM.
-    - To use Mistral 7b, you need to open the terminal and type `ollama pull mistral` and press Enter.
+- Once you have downloaded Ollama, you need to choose an LLM. This generator is optimized for Mistral 8x7b (or Mixtral).
   - For Mistral 8x7b you need at least 48GB of RAM and a GPU with at least 24GB of VRAM.
     - To use Mistral 7b, you need to open the terminal and type `ollama pull mixtral` and press Enter.
 - Once you have downloaded the LLM, you need to set the environment variable `OLLAMA_MODEL` in the file model.env
-  - To use Mistral 7b, you need to set `OLLAMA_MODEL=mistral`, and to use Mistral 8x7b, you need to set `OLLAMA_MODEL=mixtral`.
+  - To use Mistral 8x7b, you need to set `OLLAMA_MODEL=mixtral`.
