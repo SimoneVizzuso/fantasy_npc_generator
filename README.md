@@ -34,11 +34,15 @@ The first step is setting up a Python Environment: this guide will walk you thro
 ### Step 5: Open the web app
 
 - Navigate to *fantasy_npc_generator* using the command prompt or terminal.  
-- Type `streamlit run webapp.py` and press Enter.
+- Type `streamlit run webapp.py` and press Enter. Otherwise:
+  - For Windows systems you can simply double-click on the `Fantasy_NPC_Generator.bat` file.
+  - For Unix-based systems you need first to execute `chmod +x run_webapp.sh` on terminal.
+    - Then you can run the web app by executing `./Fantasy_NPC_Generator.sh` on terminal.
 - A page will be opened in the default browser. If not, simply click on the Local URL link that will appear in the terminal.
 - When the web app is opened, you can start to use it to generate your NPCs!
 
 ## Future Features
+- Test the UNIX-based script
 - Add more options for generating NPCs
 - Generate also "standard NPCs" (like guards, merchants, etc.)
 - Create a chatbot to interact with the generated NPC
@@ -47,3 +51,18 @@ The first step is setting up a Python Environment: this guide will walk you thro
 - Add PDF export functionality
 - Add card-like view for the generated NPCs
 - Add a field to add a custom description for the NPC
+
+## Version Log
+<details>
+  <summary>**Version 2024.04.15**</summary>
+  
+    - Initial release
+    - Basic functionality to generate NPCs from classes, races, age
+      and alignment
+    - Webapp with basic UI to generate NPCs with StreamLit
+    - Added a script to open the webapp in windows or unix-based systems
+    - Added a README file with instructions on how to use the generator
+    - Added a requirements.txt file with the necessary dependencies
+    - Added a model.env file to set the LLM model
+    - Added a CHANGELOG file to keep track of the changes in the project
+</details>
