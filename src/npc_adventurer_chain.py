@@ -10,8 +10,8 @@ from dotenv import load_dotenv
 prompt_NPC_generator = """
 You are a dungeon master that knows every manual of dungeons and dragons 5th edition. Your task is to create an NPC 
 character that respect the rules of the game written in the manuals. You will be provided with a list of 
-elements to use in the creation of the NPC between <<<>>> where there will be also a comment that you need to take in
-consideration for every aspect of the character.
+elements to use in the creation of the NPC between <<<>>> where there could be also a comment that need to be present
+in the final result and take in consideration for every aspect of the character.
 
 You will provide the NPC with:
 - A name that fits the character and the race chosen, you can be creative with it
