@@ -3,7 +3,11 @@ import random
 
 import streamlit as st
 
-from utils.llms_utils import generate_npc
+from src.character import Character
+from src.npc_adventurer_chain import generate_npc
+from src.utils import *
+
+# st.set_page_config(layout="wide")
 
 common_races = []
 rare_races = []
@@ -27,24 +31,25 @@ def initialize():
         ages = data['age']
 
 
-def races_container():
+def races_container(col4):
     global races
-    st.header('Races options')
+    with col4:
+        st.header('Races options')
 
-    st.subheader('Common Races')
+        if 'common_races' not in st.session_state:
+            st.session_state['common_races'] = []
 
-    if 'common_races' not in st.session_state:
-        st.session_state['common_races'] = []
+        container_common_races = st.container()
 
-    container_common_races = st.container()
+        ms_common_race = container_common_races.multiselect('Select one or more common races:',
+                                                            common_races, key='ms_common_race')
 
-    ms_common_race = container_common_races.multiselect('Select one or more common races:',
-                                                        common_races, key='ms_common_race')
+        def _common_select_all():
+            st.session_state.ms_common_race = common_races
 
-    def _common_select_all():
-        st.session_state.ms_common_race = common_races
+        st.button("Select all common", on_click=_common_select_all)
 
-    st.button("Select all common", on_click=_common_select_all)
+    st.markdown("<hr>", unsafe_allow_html=True)
 
     st.subheader('Rare Races')
 
@@ -75,7 +80,6 @@ def races_container():
         st.session_state.ms_exotic_race = exotic_races
 
     st.button("Select all exotic", on_click=_exotic_select_all)
-    st.markdown("<hr>", unsafe_allow_html=True)
 
     return list(ms_common_race + ms_rare_race + ms_exotic_race)
 
@@ -96,7 +100,6 @@ def classes_container():
         st.session_state.ms_class = classes
 
     st.button("Select all classes", on_click=_class_select_all)
-    st.markdown("<hr>", unsafe_allow_html=True)
 
     return ms_class
 
@@ -112,17 +115,7 @@ def alignment_container():
     sb_alignment = container_alignment.selectbox('Select one alignment:',
                                                  alignment, key='sb_alignment')
 
-    st.markdown("<hr>", unsafe_allow_html=True)
-
     return sb_alignment
-
-
-def randomize_selection(chosen_classes, chosen_races, chosen_ages):
-    char_class = random.choice(chosen_classes)
-    char_race = random.choice(chosen_races)
-    char_age_range = random.choice(chosen_ages)
-    char_age = age_calculator(char_race, char_age_range)
-    return char_class, char_race, char_age
 
 
 def age_container():
@@ -130,66 +123,42 @@ def age_container():
     container_age = st.container()
     sb_ages = container_age.multiselect('Select one or more ages:',
                                         ['young', 'adult', 'old'], key='ms_ages')
-    st.markdown("<hr>", unsafe_allow_html=True)
     return sb_ages
-
-
-def age_calculator(char_race, char_age_range):
-    global ages
-    age_ranges = ages[char_race]
-    mature_age, max_age = age_ranges.split('-')
-    mature_age = int(mature_age)
-
-    check_over_max_age = False  # TODO: implement this as a message to the user
-    if max_age.endswith('+'):
-        max_age = int(max_age[:-1])
-        check_over_max_age = True
-    else:
-        max_age = int(max_age)
-
-    if char_age_range == 'young':
-        char_age = random.randint(mature_age - int(mature_age * 0.4), mature_age - 1)
-    elif char_age_range == 'adult':
-        char_age = random.randint(mature_age, int(max_age * 0.3))
-    elif char_age_range == 'old':
-        char_age = random.randint(int(max_age * 0.3) + 1, max_age)
-    else:
-        char_age = random.randint(1, max_age)
-
-    return char_age
 
 
 def main():
     initialize()
     st.title(f'Fantasy NPC Generator')
     st.write(f'This generator is based on Dungeons and Dragons 5th edition to create unique fantasy NPCs')
+    characters_list = []
 
-    with st.sidebar:
+    with st.expander('Set options'):
         st.title('Options')
         st.write('Except for alignment, you can select multiple options but the generator will only choose one of each')
 
-        selected_classes = classes_container()
-        selected_age = age_container()
-        char_alignment = alignment_container()
-        selected_races = races_container()
+        col1, col2 = st.columns(2)
+        with col1:
+            selected_age = age_container()
+        with col2:
+            char_alignment = alignment_container()
+        st.markdown("<hr>", unsafe_allow_html=True)
+        col3, col4 = st.columns(2)
+        with col3:
+            selected_classes = classes_container()
+        selected_races = races_container(col4)
+        additional_comments = st.text_area('Add any additional comments here to take into account in the NPC '
+                                           'generation.:', '')
 
-    if len(selected_races) > 0 and len(selected_classes) > 0:
-        if st.button('Generate NPC'):
-            with st.spinner('Your NPC is being generated... (estimated time: 20-30 seconds)'):
-                char_class, char_race, char_age = randomize_selection(selected_classes, selected_races, selected_age)
-                char_name, char_description, char_marks, char_profession, char_background = generate_npc(char_class,
-                                                                                                         char_race,
-                                                                                                         char_age,
-                                                                                                         char_alignment)
-            st.write(f'Name: {char_name}')
-            st.write(f'Class: {char_class}')
-            st.write(f'Race: {char_race}')
-            st.write(f'Age: {char_age}')
-            st.write(f'Alignment: {char_alignment}')
-            st.write(f'Profession: {char_profession}')
-            st.write(f'Description: {char_description}')
-            st.write(f'Distinctive Marks: {char_marks}')
-            st.write(f'Background: {char_background}')
+    if st.button('Generate NPC'):
+        cc = Character()
+        with st.spinner('Your NPC is being generated... (estimated time: 30-40 seconds)'):
+            cc.alignment = char_alignment
+            cc.job, cc.race, cc.age = randomize_selection(
+                ages, classes, common_races + rare_races + exotic_races, selected_classes, selected_races, selected_age)
+            cc.name, cc.personality, cc.description, cc.marks, cc.profession, cc.background = generate_npc(
+                cc.job, cc.race, cc.age, cc.alignment, additional_comments)
+        for attr, value in cc.__dict__.items():
+            st.write(f'{attr.capitalize()}: {value}')
 
 
 if __name__ == "__main__":
