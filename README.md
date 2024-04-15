@@ -18,8 +18,11 @@ The first step is setting up a Python Environment: this guide will walk you thro
 
 ### Step 3: Setting Up the Environment
 
-- Ensure that you have the necessary dependencies installed.
-- Open the terminal in *fantasy_npc_generator* folder, type `pip install -r requirements.txt` and press Enter.
+- Clone the repo with the command `git clone https://github.com/SimoneVizzuso/fantasy_npc_generator` or download the zip file from the GitHub page.
+- You need to create a virtual environment to install the dependencies.
+  - Open the terminal in *fantasy_npc_generator* folder, and type `python3 -m venv .venv` to  and press Enter.
+  - Then type `.venv/Scripts/Activate.ps1` and press Enter.
+- To install all the dependencies type `pip install -r requirements.txt` and press Enter.
 
 ### Step 4: Install the LLM
 
