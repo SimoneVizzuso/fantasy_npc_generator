@@ -2,8 +2,11 @@
 This is a simple NPC generator for fantasy settings. It is designed based on Dungeons and Dragons 5th Edition, but can be used for any fantasy setting. It is designed to be used by a Dungeon Master to quickly generate NPCs for their campaign. It is a work in progress and will be updated as I have time to work on it.
 
 ## How to Use
-The first step is setting up a Python Environment: this guide will walk you through the process for setting up a new PC without Python.
+The first step is lone the repo with the command `git clone https://github.com/SimoneVizzuso/fantasy_npc_generator` or download the zip file from the GitHub page.  
+For the generator to work, you also need to install a LLM (Large Language Model). The fastest and easiest way to do this is to use Ollama.  
+- You can download Ollama from [here](https://ollama.com/)
 
+Then you need to setting up a Python Environment: this guide will walk you through the process for setting up a new PC without Python.
 ### Step 1: Download and Install Python
 
 - Open your web browser and navigate to the official Python website [here](python.org).  
@@ -16,9 +19,16 @@ The first step is setting up a Python Environment: this guide will walk you thro
 - After the installation is complete, open your terminal, type `python --version` and press Enter. This command should display the installed Python version.  
 - Check that the version is `3.10`
 
+## Automatic Installation
+
+- For Windows systems you can simply double-click on the `Fantasy_NPC_Generator.bat` file.
+- For Unix-based systems you need first to execute `chmod +x run_webapp.sh` on terminal.
+  - Then you can run the web app by executing `./Fantasy_NPC_Generator.sh` on terminal.
+
+## Manual Installation
+
 ### Step 3: Setting Up the Environment
 
-- Clone the repo with the command `git clone https://github.com/SimoneVizzuso/fantasy_npc_generator` or download the zip file from the GitHub page.
 - You need to create a virtual environment to install the dependencies.
   - Open the terminal in *fantasy_npc_generator* folder, and type `python3 -m venv .venv` to  and press Enter.
   - Then type `.venv/Scripts/Activate.ps1` and press Enter.
@@ -26,21 +36,16 @@ The first step is setting up a Python Environment: this guide will walk you thro
 
 ### Step 4: Install the LLM
 
-- For the generator to work, you need to install a LLM (Large Language Model). The fastest and easiest way to do this is to use Ollama.
-- You can download Ollama from [here](https://ollama.com/)
 - Once you have downloaded Ollama, you need to choose an LLM. This generator is optimized for Mistral 8x7b (or Mixtral).
   - For Mistral 8x7b you need at least 48GB of RAM and a GPU with at least 24GB of VRAM.
     - To use Mistral 7b, you need to open the terminal and type `ollama pull mixtral` and press Enter.
-- Once you have downloaded the LLM, you need to set the environment variable `OLLAMA_MODEL` in the file model.env
+- Once you have downloaded the LLM, you need to set the environment variable `OLLAMA_MODEL` in the file data/model.env
   - To use Mistral 8x7b, you need to set `OLLAMA_MODEL=mixtral`.
 
 ### Step 5: Open the web app
 
 - Navigate to *fantasy_npc_generator* using the command prompt or terminal.  
-- Type `streamlit run webapp.py` and press Enter. Otherwise:
-  - For Windows systems you can simply double-click on the `Fantasy_NPC_Generator.bat` file.
-  - For Unix-based systems you need first to execute `chmod +x run_webapp.sh` on terminal.
-    - Then you can run the web app by executing `./Fantasy_NPC_Generator.sh` on terminal.
+- Type `streamlit run webapp.py` and press Enter.
 - A page will be opened in the default browser. If not, simply click on the Local URL link that will appear in the terminal.
 - When the web app is opened, you can start to use it to generate your NPCs!
 
@@ -54,6 +59,9 @@ The first step is setting up a Python Environment: this guide will walk you thro
 - Add PDF export functionality
 - Add card-like view for the generated NPCs
 - Add a field to add a custom description for the NPC
+- Generate the NPC's image with an image generator
+- Generate the NPC's voice with a voice generator
+- Integrate it into a Character Creator for D&D 5e
 
 ## Version Log
 <details>
