@@ -22,6 +22,7 @@ You will provide the NPC with:
 You need to write explicitly the profession name and then add a comma and a brief description of the role
 - A brief background story that explains the character's past and how it got to the current situation, using the
 previous information, provided and generated
+- A brief hook that can be used to introduce the character in a campaign, it can be a rumor, a legend, a prophecy, etc.
 
 You will have to use the information provided to create a unique NPC character that can be used in a campaign.
 
@@ -48,6 +49,8 @@ He was raised by his parents, who were both skilled wizards. He learned the art 
 years studying the ancient texts and scrolls that contained the secrets of the arcane. He became a powerful wizard
 and a respected member of the elven community. He is now known as the protector of the forest and the guardian of
 its secrets. He is always ready to help those in need and to protect the forest from any danger that may come its way.
+hook: Elrond is said to be the only one who knows the location of the hidden treasure of the elves, a powerful artifact
+that can bring great power to whoever possesses it.
 ---------------------------------------------------------------------------------------------------------------------
 class: Fighter
 race: Human
@@ -67,6 +70,8 @@ was raised by his father, who was a veteran warrior that fought in many battles.
 him and spent many years training with the other warriors of the city. He became a skilled fighter and a respected
 member of the warrior guild. He is now known as the champion of the city and the protector of its people. He is
 always ready to defend the city from any threat that may come its way.
+hook: John has lost sight of his little brother during a battle and is now searching for him, he believes that he is
+still alive and will do anything to find him.
 ###
 
 <<<
@@ -88,8 +93,9 @@ class NPC(BaseModel):
     marks: str = Field(description="distinctive marks of the NPC")
     profession: str = Field(description="profession of the NPC")
     background: str = Field(description="background of the NPC")
+    hook: str = Field(description="hook of the NPC")
 
-    @validator("name", "personality", "description", "marks", "profession", "background", allow_reuse=True)
+    @validator("name", "personality", "description", "marks", "profession", "background", "hook", allow_reuse=True)
     def validate_string_fields(cls, field):
         if not isinstance(field, str):
             raise ValueError("Each field needs to be a string")
@@ -122,4 +128,5 @@ def generate_npc(char_class, char_race, char_age, char_alignment, additional_com
                                       'char_alignment': char_alignment, 'additional_comments': additional_comments})
     end = time.time()
     print(f'Elapsed time: {end - start}')
-    return output.name, output.personality, output.description, output.marks, output.profession, output.background
+    return (output.name, output.personality, output.description, output.marks, output.profession, output.background,
+            output.hook)

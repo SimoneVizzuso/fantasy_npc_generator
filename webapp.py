@@ -155,7 +155,7 @@ def main():
             cc.alignment = char_alignment
             cc.job, cc.race, cc.age = randomize_selection(
                 ages, classes, common_races + rare_races + exotic_races, selected_classes, selected_races, selected_age)
-            cc.name, cc.personality, cc.description, cc.marks, cc.profession, cc.background = generate_npc(
+            cc.name, cc.personality, cc.description, cc.marks, cc.profession, cc.background, cc.hook = generate_npc(
                 cc.job, cc.race, cc.age, cc.alignment, additional_comments)
         for attr, value in cc.__dict__.items():
             st.write(f'{attr.capitalize()}: {value}')
