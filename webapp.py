@@ -3,7 +3,7 @@ import random
 
 import streamlit as st
 
-from src.character import Character
+from src.Character import Character
 from src.npc_adventurer_chain import generate_npc
 from src.utils import *
 
@@ -130,7 +130,8 @@ def main():
     initialize()
     st.title(f'Fantasy NPC Generator')
     st.write(f'This generator is based on Dungeons and Dragons 5th edition to create unique fantasy NPCs')
-    characters_list = []
+    if 'characters_list' not in st.session_state:
+        st.session_state.characters_list = []
 
     with st.expander('Set options'):
         st.title('Options')
@@ -148,16 +149,27 @@ def main():
         selected_races = races_container(col4)
         additional_comments = st.text_area('Add any additional comments here to take into account in the NPC '
                                            'generation.:', '')
+    col3, col4 = st.columns(2)
+    with col3:
+        if st.button('Generate NPC'):
+            cc = Character()
+            with st.spinner('Your NPC is being generated... (estimated time: 30-40 seconds)'):
+                cc.alignment = char_alignment
+                cc.job, cc.race, cc.age = randomize_selection(
+                    ages, classes, common_races + rare_races + exotic_races, selected_classes, selected_races, selected_age)
+                cc.name, cc.personality, cc.description, cc.marks, cc.profession, cc.background, cc.hook = generate_npc(
+                    cc.job, cc.race, cc.age, cc.alignment, additional_comments)
+                st.session_state.characters_list.append(cc)
+            # Store the character information in the session state
+            st.session_state['character_info'] = {attr: value for attr, value in cc.__dict__.items()}
+            # Generate the PDF and provide the download link as soon as the user clicks the button
+            with col4:
+                pdf_link = generate_pdf_npc(st.session_state.characters_list[-1])
+                st.markdown(pdf_link, unsafe_allow_html=True)
 
-    if st.button('Generate NPC'):
-        cc = Character()
-        with st.spinner('Your NPC is being generated... (estimated time: 30-40 seconds)'):
-            cc.alignment = char_alignment
-            cc.job, cc.race, cc.age = randomize_selection(
-                ages, classes, common_races + rare_races + exotic_races, selected_classes, selected_races, selected_age)
-            cc.name, cc.personality, cc.description, cc.marks, cc.profession, cc.background, cc.hook = generate_npc(
-                cc.job, cc.race, cc.age, cc.alignment, additional_comments)
-        for attr, value in cc.__dict__.items():
+    # Display the character information from the session state
+    if 'character_info' in st.session_state:
+        for attr, value in st.session_state['character_info'].items():
             st.write(f'{attr.capitalize()}: {value}')
 
 
