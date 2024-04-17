@@ -5,7 +5,7 @@ import streamlit as st
 
 from src.Character import Character
 from src.npc_adventurer_chain import generate_npc
-from src.utils import randomize_selection, generate_pdf_npc, save_character_json
+from src.utils import randomize_selection, generate_pdf_npc, save_character_json, load_characters_json
 
 # st.set_page_config(layout="wide")
 
@@ -108,26 +108,41 @@ def age_container():
     return sb_ages
 
 
-@st.cache_data
 def plot_characters(input_data_list=None):
+    def _character_restore(index):
+        # Filter the DataFrame to get the row with the specified index
+        character_row = st.session_state["characters_dataframe_list"][
+            st.session_state["characters_dataframe_list"]['Index'] == index]
+
+        # If the character exists, convert the row to a dictionary and assign it to 'character_info'
+        if not character_row.empty:
+            st.session_state['character_info'] = character_row.iloc[0].to_dict()
+
+        st.rerun()
+
+    columns = st.columns((1, 1, 1, 1, 1, 1))
+    fields = ['Name', 'Class', 'Race', 'Age', "Alignment", 'Restore']
+
     if len(input_data_list) > 0:
         # Create a DataFrame to display the characters in a table
-        characters_history_df = pd.DataFrame(input_data_list)
 
-        # Generate the HTML table
-        html_table = '<table>\n'
-        for col in characters_history_df.columns:
-            html_table += f'<th>{col}</th>'
-        html_table += '<th>Action</th>\n'  # Add an additional header for the buttons or links
-        for _, row in characters_history_df.iterrows():
-            html_table += '<tr>\n'
-            for col in characters_history_df.columns:
-                html_table += f'<td>{row[col]}</td>'
-            html_table += '<td><button>Button</button></td>\n'  # Add a button or a link in each row
-            html_table += '</tr>\n'
-        html_table += '</table>'
+        for col, field_name in zip(columns, fields):
+            col.write(field_name)
 
-        st.write(html_table, unsafe_allow_html=True)
+        # Loop through the DataFrame rows
+        for i, row in input_data_list.iterrows():
+            col1, col2, col3, col4, col5, col6 = st.columns((1, 1, 1, 1, 1, 1))
+            col1.write(row['Name'])  # index
+            col2.write(row['Class'])  # email
+            col3.write(row['Race'])  # unique ID
+            col4.write(str(row['Age']))  # email status
+            col5.write(row['Alignment'])
+            button_type = "Restore"
+            button_phold = col6.empty()  # create a placeholder
+            do_action = button_phold.button(button_type, key=i)
+            if do_action:
+                _character_restore(row['Index'])
+            st.markdown("<hr>", unsafe_allow_html=True)
     else:
         st.write('No characters yet.')
 
@@ -136,8 +151,14 @@ def main():
     initialize()
     st.title(f'Fantasy NPC Generator')
     st.write(f'This generator is based on Dungeons and Dragons 5th edition to create unique fantasy NPCs')
-    if 'characters_list' not in st.session_state:
-        st.session_state.characters_list = []
+
+    if 'characters_list' not in st.session_state or 'characters_dataframe_list' not in st.session_state:
+        st.session_state.characters_list, st.session_state.characters_dataframe_list = (
+            load_characters_json(json_file_path)
+        )
+
+    if 'character_info' not in st.session_state:
+        st.session_state.character_info = None
 
     with st.expander('Set options'):
         st.title('Options')
@@ -157,9 +178,6 @@ def main():
                                            'generation.:', '')
     col3, col4 = st.columns(2)
 
-    if 'input_data_list' not in st.session_state:
-        st.session_state["input_data_list"] = []
-
     with col3:
         if st.button('Generate NPC'):
             cc = Character()
@@ -172,9 +190,6 @@ def main():
                     cc.job, cc.race, cc.age, cc.alignment, additional_comments)
                 st.session_state.characters_list.append(cc)
 
-            if 'character_info' not in st.session_state:
-                st.session_state.character_info = None
-
             st.session_state['character_info'] = {attr: value for attr, value in cc.__dict__.items()}
 
             input_data = pd.DataFrame({
@@ -183,10 +198,20 @@ def main():
                 'Class': [cc.job],
                 'Race': [cc.race],
                 'Age': [cc.age],
-                'Alignment': [cc.alignment]
+                'Alignment': [cc.alignment],
+                'Personality': [cc.personality],
+                'Profession': [cc.profession],
+                'Description': [cc.description],
+                'Marks': [cc.marks],
+                'Background': [cc.background],
+                'Hook': [cc.hook]
             })
 
-            st.session_state["input_data_list"].append(input_data.iloc[0])
+            if len(st.session_state["characters_dataframe_list"]) > 4:
+                st.session_state["characters_dataframe_list"] = st.session_state["characters_dataframe_list"][:-1]
+            st.session_state["characters_dataframe_list"] = pd.concat([input_data.iloc[[0]],
+                                                                       st.session_state["characters_dataframe_list"]],
+                                                                      ignore_index=True)
 
             save_character_json(json_file_path, cc)
 
@@ -196,17 +221,14 @@ def main():
                 st.markdown(pdf_link, unsafe_allow_html=True)
 
     # Display the character information from the session state
-    if 'character_info' in st.session_state:
+    if 'character_info' in st.session_state and st.session_state['character_info']:
         for attr, value in st.session_state['character_info'].items():
             st.write(f'{attr.capitalize()}: {value}')
 
     st.markdown("<hr>", unsafe_allow_html=True)
 
-    st.header('Character History')
-    if st.button('Clean History'):
-        st.session_state["input_data_list"] = []
-
-    plot_characters(st.session_state["input_data_list"])
+    st.header('Last 5 Characters Generated')
+    plot_characters(st.session_state["characters_dataframe_list"])
 
 
 if __name__ == "__main__":

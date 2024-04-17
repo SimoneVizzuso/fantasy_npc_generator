@@ -4,9 +4,13 @@ import os
 import random
 
 from io import BytesIO
+
+import pandas as pd
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import SimpleDocTemplate, Paragraph
+
+from src.Character import Character
 
 
 def randomize_selection(ages, classes, races, alignments, chosen_classes, chosen_races, chosen_ages, chosen_alignments):
@@ -104,7 +108,7 @@ def generate_pdf_npc(character):
 def save_character_json(json_file_path, cc):
     if not os.path.exists(json_file_path):
         with open(json_file_path, 'w') as json_file:
-            json.dump({}, json_file)
+            json.dump({}, json_file, indent=4)
 
     with open(json_file_path, 'r') as json_file:
         characters = json.load(json_file)
@@ -118,3 +122,64 @@ def save_character_json(json_file_path, cc):
 
     with open(json_file_path, 'w') as json_file:
         json.dump(characters, json_file)
+
+
+def load_characters_json(json_file_path):
+    # Open the JSON file and load the data
+    with open(json_file_path, 'r') as json_file:
+        characters = json.load(json_file)
+
+    if not characters:
+        return [], []
+
+    # Initialize the list of Character objects and the list of dictionaries for the DataFrame
+    characters_list = []
+    dataframe_list = []
+
+    reversed_items = list(reversed(list(characters.items())))
+
+    # Loop through the dictionary items
+    for counter, (index, character_info) in enumerate(reversed_items):
+        # Create a new Character object and set its attributes
+        cc = Character()
+        for attr, value in character_info.items():
+            setattr(cc, attr, value)
+
+        # Add the Character object to the list
+        characters_list.append(cc)
+
+        # Create a dictionary with the character information in the format of the input_data DataFrame
+        dataframe_dict = {
+            'Index': cc.index,
+            'Name': cc.name,
+            'Class': cc.job,
+            'Race': cc.race,
+            'Age': cc.age,
+            'Alignment': cc.alignment
+        }
+
+        dataframe_dict = {
+            'Index': cc.index,
+            'Name': cc.name,
+            'Class': cc.job,
+            'Race': cc.race,
+            'Age': cc.age,
+            'Alignment': cc.alignment,
+            'Personality': cc.personality,
+            'Profession': cc.profession,
+            'Description': cc.description,
+            'Marks': cc.marks,
+            'Background': cc.background,
+            'Hook': cc.hook
+        }
+
+        # Add the dictionary to the list
+        dataframe_list.append(dataframe_dict)
+
+        if counter == 4:
+            break
+
+    # Create a DataFrame from the list of dictionaries
+    characters_dataframe = pd.DataFrame(dataframe_list)
+
+    return characters_list, characters_dataframe
