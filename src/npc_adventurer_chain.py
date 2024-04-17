@@ -79,7 +79,7 @@ still alive and will do anything to find him.
 ###
 
 <<<
-class: {char_class}
+class: {char_job}
 race: {char_race}
 age: {char_age}
 alignment: {char_alignment}
@@ -106,7 +106,7 @@ class NPC(BaseModel):
         return field
 
 
-def generate_npc(char_class, char_race, char_age, char_alignment, additional_comments=""):
+def generate_npc(char_job, char_race, char_age, char_alignment, additional_comments=""):
     # Load the environment variables from .env file
     load_dotenv("data/model.env")
 
@@ -121,14 +121,14 @@ def generate_npc(char_class, char_race, char_age, char_alignment, additional_com
 
     prompt = PromptTemplate(
         template=prompt_NPC_generator,
-        input_variables=['char_class', 'char_race', 'char_age', 'char_alignment'],
+        input_variables=['char_job', 'char_race', 'char_age', 'char_alignment'],
         partial_variables={"format_instructions": parser.get_format_instructions()},
     )
 
     # And a query intended to prompt a language model to populate the data structure.
     prompt_and_model = prompt | model | parser
     start = time.time()
-    output = prompt_and_model.invoke({"char_class": char_class, 'char_race': char_race, 'char_age': char_age,
+    output = prompt_and_model.invoke({"char_job": char_job, 'char_race': char_race, 'char_age': char_age,
                                       'char_alignment': char_alignment, 'additional_comments': additional_comments})
     end = time.time()
     print(f'Elapsed time: {end - start}')

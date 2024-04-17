@@ -13,7 +13,7 @@ common_races = []
 rare_races = []
 exotic_races = []
 
-classes = []
+jobs = []
 races = []
 alignment = []
 ages = []
@@ -23,13 +23,13 @@ data_path = 'data/data.json'
 
 
 def initialize():
-    global common_races, rare_races, exotic_races, classes, alignment, ages
+    global common_races, rare_races, exotic_races, jobs, alignment, ages
     with open(data_path, 'r') as data_file:
         data = json.load(data_file)
         common_races = data['races']['common']
         rare_races = data['races']['rare']
         exotic_races = data['races']['exotic']
-        classes = data['classes']
+        jobs = data['jobs']
         alignment = data['alignment']
         ages = data['age']
 
@@ -75,20 +75,20 @@ def races_container(col4):
     return list(ms_common_race + ms_rare_race + ms_exotic_race)
 
 
-def classes_container():
-    global classes
+def jobs_container():
+    global jobs
     st.header('Classes options')
-    if 'classes' not in st.session_state:
-        st.session_state['classes'] = []
-    container_classes = st.container()
-    ms_class = container_classes.multiselect('Select one or more classes:',
-                                             classes, key='ms_class')
+    if 'jobs' not in st.session_state:
+        st.session_state['jobs'] = []
+    container_jobs = st.container()
+    ms_job = container_jobs.multiselect('Select one or more classes:',
+                                             jobs, key='ms_job')
 
-    def _class_select_all():
-        st.session_state.ms_class = classes
+    def _job_select_all():
+        st.session_state.ms_job = jobs
 
-    st.button("Select all classes", on_click=_class_select_all)
-    return ms_class
+    st.button("Select all classes", on_click=_job_select_all)
+    return ms_job
 
 
 def alignment_container():
@@ -112,12 +112,14 @@ def plot_characters(input_data_list=None):
     def _character_restore(index):
         # Filter the DataFrame to get the row with the specified index
         character_row = st.session_state["characters_dataframe_list"][
-            st.session_state["characters_dataframe_list"]['Index'] == index]
+            st.session_state["characters_dataframe_list"]['index'] == index]
 
         # If the character exists, convert the row to a dictionary and assign it to 'character_info'
         if not character_row.empty:
-            st.session_state['character_info'] = character_row.iloc[0].to_dict()
+            character_dict = character_row.iloc[0].to_dict()
+            st.session_state['character_info'] = Character(**character_dict)
 
+        st.session_state.pdf_link = generate_pdf_npc(st.session_state.character_info)
         st.rerun()
 
     columns = st.columns((1, 1, 1, 1, 1, 1))
@@ -132,16 +134,16 @@ def plot_characters(input_data_list=None):
         # Loop through the DataFrame rows
         for i, row in input_data_list.iterrows():
             col1, col2, col3, col4, col5, col6 = st.columns((1, 1, 1, 1, 1, 1))
-            col1.write(row['Name'])  # index
-            col2.write(row['Class'])  # email
-            col3.write(row['Race'])  # unique ID
-            col4.write(str(row['Age']))  # email status
-            col5.write(row['Alignment'])
+            col1.write(row['name'])  # index
+            col2.write(row['job'])  # email
+            col3.write(row['race'])  # unique ID
+            col4.write(str(row['age']))  # email status
+            col5.write(row['alignment'])
             button_type = "Restore"
             button_phold = col6.empty()  # create a placeholder
             do_action = button_phold.button(button_type, key=i)
             if do_action:
-                _character_restore(row['Index'])
+                _character_restore(row['index'])
             st.markdown("<hr>", unsafe_allow_html=True)
     else:
         st.write('No characters yet.')
@@ -159,6 +161,8 @@ def main():
 
     if 'character_info' not in st.session_state:
         st.session_state.character_info = None
+    if 'pdf_link' not in st.session_state:
+        st.session_state.pdf_link = None
 
     with st.expander('Set options'):
         st.title('Options')
@@ -172,7 +176,7 @@ def main():
         st.markdown("<hr>", unsafe_allow_html=True)
         col3, col4 = st.columns(2)
         with col3:
-            selected_classes = classes_container()
+            selected_jobs = jobs_container()
         selected_races = races_container(col4)
         additional_comments = st.text_area('Add any additional comments here to take into account in the NPC '
                                            'generation.:', '')
@@ -184,27 +188,26 @@ def main():
 
             with st.spinner('Your NPC is being generated...\n(estimated time: 30-40 seconds)'):
                 cc.job, cc.race, cc.age, cc.alignment = randomize_selection(
-                    ages, classes, common_races + rare_races + exotic_races, alignment, selected_classes,
+                    ages, jobs, common_races + rare_races + exotic_races, alignment, selected_jobs,
                     selected_races, selected_age, selected_alignment)
                 cc.name, cc.personality, cc.description, cc.marks, cc.profession, cc.background, cc.hook = generate_npc(
                     cc.job, cc.race, cc.age, cc.alignment, additional_comments)
                 st.session_state.characters_list.append(cc)
-
-            st.session_state['character_info'] = {attr: value for attr, value in cc.__dict__.items()}
+                st.session_state.character_info = cc
 
             input_data = pd.DataFrame({
-                'Index': [cc.index],
-                'Name': [cc.name],
-                'Class': [cc.job],
-                'Race': [cc.race],
-                'Age': [cc.age],
-                'Alignment': [cc.alignment],
-                'Personality': [cc.personality],
-                'Profession': [cc.profession],
-                'Description': [cc.description],
-                'Marks': [cc.marks],
-                'Background': [cc.background],
-                'Hook': [cc.hook]
+                'index': [cc.index],
+                'name': [cc.name],
+                'job': [cc.job],
+                'race': [cc.race],
+                'age': [cc.age],
+                'alignment': [cc.alignment],
+                'personality': [cc.personality],
+                'profession': [cc.profession],
+                'description': [cc.description],
+                'marks': [cc.marks],
+                'background': [cc.background],
+                'hook': [cc.hook]
             })
 
             if len(st.session_state["characters_dataframe_list"]) > 4:
@@ -216,13 +219,14 @@ def main():
             save_character_json(json_file_path, cc)
 
             # Generate the PDF and provide the download link as soon as the user clicks the button
-            with col4:
-                pdf_link = generate_pdf_npc(st.session_state.characters_list[-1])
-                st.markdown(pdf_link, unsafe_allow_html=True)
+    with col4:
+        if 'character_info' in st.session_state and st.session_state.character_info:
+            st.session_state.pdf_link = generate_pdf_npc(st.session_state.character_info)
+            st.markdown(st.session_state.pdf_link, unsafe_allow_html=True)
 
     # Display the character information from the session state
-    if 'character_info' in st.session_state and st.session_state['character_info']:
-        for attr, value in st.session_state['character_info'].items():
+    if 'character_info' in st.session_state and st.session_state.character_info:
+        for attr, value in st.session_state.character_info.__dict__.items():
             st.write(f'{attr.capitalize()}: {value}')
 
     st.markdown("<hr>", unsafe_allow_html=True)

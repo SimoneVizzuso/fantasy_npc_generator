@@ -13,21 +13,21 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph
 from src.Character import Character
 
 
-def randomize_selection(ages, classes, races, alignments, chosen_classes, chosen_races, chosen_ages, chosen_alignments):
-    if len(chosen_classes) < 1:
-        chosen_classes = classes
+def randomize_selection(ages, jobs, races, alignments, chosen_jobs, chosen_races, chosen_ages, chosen_alignments):
+    if len(chosen_jobs) < 1:
+        chosen_jobs = jobs
     if len(chosen_races) < 1:
         chosen_races = races
     if len(chosen_ages) < 1:
         chosen_ages = ['young', 'adult', 'old']
     if len(chosen_alignments) < 1:
         chosen_alignments = alignments
-    char_class = random.choice(chosen_classes)
+    char_job = random.choice(chosen_jobs)
     char_race = random.choice(chosen_races)
     char_age_range = random.choice(chosen_ages)
     char_age = age_calculator(ages, char_race, char_age_range)
     char_alignment = random.choice(chosen_alignments)
-    return char_class, char_race, char_age, char_alignment
+    return char_job, char_race, char_age, char_alignment
 
 
 def age_calculator(ages, char_race, char_age_range):
@@ -148,29 +148,19 @@ def load_characters_json(json_file_path):
         # Add the Character object to the list
         characters_list.append(cc)
 
-        # Create a dictionary with the character information in the format of the input_data DataFrame
         dataframe_dict = {
-            'Index': cc.index,
-            'Name': cc.name,
-            'Class': cc.job,
-            'Race': cc.race,
-            'Age': cc.age,
-            'Alignment': cc.alignment
-        }
-
-        dataframe_dict = {
-            'Index': cc.index,
-            'Name': cc.name,
-            'Class': cc.job,
-            'Race': cc.race,
-            'Age': cc.age,
-            'Alignment': cc.alignment,
-            'Personality': cc.personality,
-            'Profession': cc.profession,
-            'Description': cc.description,
-            'Marks': cc.marks,
-            'Background': cc.background,
-            'Hook': cc.hook
+            'index': cc.index,
+            'name': cc.name,
+            'job': cc.job,
+            'race': cc.race,
+            'age': cc.age,
+            'alignment': cc.alignment,
+            'personality': cc.personality,
+            'profession': cc.profession,
+            'description': cc.description,
+            'marks': cc.marks,
+            'background': cc.background,
+            'hook': cc.hook
         }
 
         # Add the dictionary to the list
