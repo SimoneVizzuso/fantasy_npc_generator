@@ -4,7 +4,7 @@ from random import random
 class Character:
     def __init__(self, name=None, job=None, race=None, age=None, alignment=None, personality=None, profession=None,
                  description=None, marks=None, background=None, hook=None):
-        self.index = random()
+        self.index = str(random())[2:]
         self.name = name
         self.job = job
         self.race = race
