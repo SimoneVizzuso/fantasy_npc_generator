@@ -64,9 +64,23 @@ Then you need to setting up a Python Environment: this guide will walk you throu
 - Integrate it into a Character Creator for D&D 5e
 
 ## Version Log
+
+> ### v2024.04.18
+> - Added automatic installation for Windows systems
+> - Added a field to add a custom description for the NPC
+> - Added PDF export functionality
+> - Added hook to introduce the character
+> - Added a field to add a custom description for the NPC
+> - Added personality traits to the NPC
+> - Added the history of the last 5 NPCs generated
+> - Some fix of the prompt with age, hook and custom description
+> - Added possiblity to choose multiple alignments
+> - Added function to save all the generated NPCs in a json file
+
+#### Older versions:
 <details>
-  <summary>**Version 2024.04.15**</summary>
-  
+  <summary><b>v2024.04.15</b></summary>
+
     - Initial release
     - Basic functionality to generate NPCs from classes, races, age
       and alignment
