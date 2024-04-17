@@ -1,4 +1,6 @@
 import base64
+import json
+import os
 import random
 
 from io import BytesIO
@@ -7,18 +9,21 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import SimpleDocTemplate, Paragraph
 
 
-def randomize_selection(ages, classes, races, chosen_classes, chosen_races, chosen_ages):
+def randomize_selection(ages, classes, races, alignments, chosen_classes, chosen_races, chosen_ages, chosen_alignments):
     if len(chosen_classes) < 1:
         chosen_classes = classes
     if len(chosen_races) < 1:
         chosen_races = races
     if len(chosen_ages) < 1:
         chosen_ages = ['young', 'adult', 'old']
+    if len(chosen_alignments) < 1:
+        chosen_alignments = alignments
     char_class = random.choice(chosen_classes)
     char_race = random.choice(chosen_races)
     char_age_range = random.choice(chosen_ages)
     char_age = age_calculator(ages, char_race, char_age_range)
-    return char_class, char_race, char_age
+    char_alignment = random.choice(chosen_alignments)
+    return char_class, char_race, char_age, char_alignment
 
 
 def age_calculator(ages, char_race, char_age_range):
@@ -94,3 +99,22 @@ def generate_pdf_npc(character):
     pdf_bytes = buffer.getvalue()
 
     return get_pdf_download_link(pdf_bytes, f"{character.name} npc character.pdf")
+
+
+def save_character_json(json_file_path, cc):
+    if not os.path.exists(json_file_path):
+        with open(json_file_path, 'w') as json_file:
+            json.dump({}, json_file)
+
+    with open(json_file_path, 'r') as json_file:
+        characters = json.load(json_file)
+
+    if characters:
+        new_index = str(max(int(i) for i in characters.keys()) + 1)
+    else:
+        new_index = '1'
+
+    characters[new_index] = {attr: value for attr, value in cc.__dict__.items()}
+
+    with open(json_file_path, 'w') as json_file:
+        json.dump(characters, json_file)
