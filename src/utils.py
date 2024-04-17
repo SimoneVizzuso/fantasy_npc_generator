@@ -1,6 +1,5 @@
 import base64
 import random
-import streamlit as st
 
 from io import BytesIO
 from reportlab.lib.pagesizes import letter
@@ -94,4 +93,4 @@ def generate_pdf_npc(character):
     # Get the value of the BytesIO object
     pdf_bytes = buffer.getvalue()
 
-    return get_pdf_download_link(pdf_bytes, f"{character.name}_npc_character.pdf")
+    return get_pdf_download_link(pdf_bytes, f"{character.name} npc character.pdf")

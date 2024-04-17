@@ -5,7 +5,7 @@ import streamlit as st
 
 from src.Character import Character
 from src.npc_adventurer_chain import generate_npc
-from src.utils import *
+from src.utils import randomize_selection, generate_pdf_npc
 
 # st.set_page_config(layout="wide")
 
@@ -153,7 +153,7 @@ def main():
     with col3:
         if st.button('Generate NPC'):
             cc = Character()
-            with st.spinner('Your NPC is being generated... (estimated time: 30-40 seconds)'):
+            with st.spinner('Your NPC is being generated...\n(estimated time: 30-40 seconds)'):
                 cc.alignment = char_alignment
                 cc.job, cc.race, cc.age = randomize_selection(
                     ages, classes, common_races + rare_races + exotic_races, selected_classes, selected_races, selected_age)
@@ -161,6 +161,8 @@ def main():
                     cc.job, cc.race, cc.age, cc.alignment, additional_comments)
                 st.session_state.characters_list.append(cc)
             # Store the character information in the session state
+            if 'character_info' not in st.session_state:
+                st.session_state.character_info = None
             st.session_state['character_info'] = {attr: value for attr, value in cc.__dict__.items()}
             # Generate the PDF and provide the download link as soon as the user clicks the button
             with col4:
