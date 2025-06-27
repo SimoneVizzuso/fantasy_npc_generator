@@ -1,10 +1,11 @@
+import uuid
 from random import random
 
 
 class Character:
     def __init__(self, index=None, name=None, job=None, race=None, age=None, alignment=None, personality=None,
                  profession=None, description=None, marks=None, background=None, hook=None):
-        self.index = str(random())[2:] if index is None else index
+        self.index = str(uuid.uuid4()) if index is None else index
         self.name = name
         self.job = job
         self.race = race

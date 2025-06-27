@@ -1,4 +1,5 @@
 import json
+import os
 
 import pandas as pd
 import streamlit as st
@@ -18,9 +19,12 @@ races = []
 alignment = []
 ages = []
 
-json_file_path = 'data/characters.json'
 data_path = 'data/data.json'
+json_file_path = 'data/characters.json'
 
+if not os.path.exists(json_file_path):
+    with open(json_file_path, 'w') as f:
+        f.write('[]')
 
 def initialize():
     global common_races, rare_races, exotic_races, jobs, alignment, ages
@@ -186,7 +190,7 @@ def main():
         if st.button('Generate NPC'):
             cc = Character()
 
-            with st.spinner('Your NPC is being generated...\n(estimated time: 30-40 seconds)'):
+            with st.spinner('Your NPC is being generated...\n(estimated time: 5-10 seconds)'):
                 cc.job, cc.race, cc.age, cc.alignment = randomize_selection(
                     ages, jobs, common_races + rare_races + exotic_races, alignment, selected_jobs,
                     selected_races, selected_age, selected_alignment)
@@ -227,7 +231,7 @@ def main():
     # Display the character information from the session state
     if 'character_info' in st.session_state and st.session_state.character_info:
         for attr, value in st.session_state.character_info.__dict__.items():
-            st.write(f'{attr.capitalize()}: {value}')
+            st.write(f'**{attr.capitalize()}:** {value}')
 
     st.markdown("<hr>", unsafe_allow_html=True)
 
