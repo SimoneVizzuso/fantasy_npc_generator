@@ -2,6 +2,7 @@ import base64
 import json
 import os
 import random
+import datetime
 
 from io import BytesIO
 
@@ -10,7 +11,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import SimpleDocTemplate, Paragraph
 
-from src.Character import Character
+from src.model.Character import Character
 
 
 def randomize_selection(ages, jobs, races, alignments, chosen_jobs, chosen_races, chosen_ages, chosen_alignments):
@@ -105,23 +106,27 @@ def generate_pdf_npc(character):
     return get_pdf_download_link(pdf_bytes, f"{character.name} npc character.pdf")
 
 
-def save_character_json(json_file_path, cc):
-    if not os.path.exists(json_file_path):
-        with open(json_file_path, 'w') as json_file:
-            json.dump({}, json_file, indent=4)
-
-    with open(json_file_path, 'r') as json_file:
-        characters = json.load(json_file)
-
-    if characters:
-        new_index = str(max(int(i) for i in characters.keys()) + 1)
+def save_npc_data(name, personality, description, marks, profession, background, hook, image_filename):
+    npc_data = {
+        "name": name,
+        "personality": personality,
+        "description": description,
+        "marks": marks,
+        "profession": profession,
+        "background": background,
+        "hook": hook,
+        "image_filename": image_filename,
+        "timestamp": datetime.datetime.now().isoformat()
+    }
+    save_path = "data/generated_npcs.json"
+    if os.path.exists(save_path):
+        with open(save_path, "r", encoding="utf-8") as f:
+            all_npcs = json.load(f)
     else:
-        new_index = '1'
-
-    characters[new_index] = {attr: value for attr, value in cc.__dict__.items()}
-
-    with open(json_file_path, 'w') as json_file:
-        json.dump(characters, json_file)
+        all_npcs = []
+    all_npcs.append(npc_data)
+    with open(save_path, "w", encoding="utf-8") as f:
+        json.dump(all_npcs, f, ensure_ascii=False, indent=2)
 
 
 def load_characters_json(json_file_path):
